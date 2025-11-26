@@ -43,7 +43,6 @@ test('POST /brands creates brand and GET /brands returns it', async () => {
 });
 
 test('POST /models and GET /models and GET /brands/:brand_id/models', async () => {
-  // create brand first
   const brand = { brand_id: 'b2', brand_name: 'Brand2' };
   await request(app).post('/brands').send(brand);
 
@@ -77,11 +76,9 @@ test('POST /models without required brand_id returns 400', async () => {
 });
 
 test('Create multiple models across brands and verify listing and filtering', async () => {
-  // create two brands
   await request(app).post('/brands').send({ brand_id: 'b3', brand_name: 'Brand3' });
   await request(app).post('/brands').send({ brand_id: 'b4', brand_name: 'Brand4' });
 
-  // create three models across the two brands
   await request(app).post('/models').send({ model_id: 'm2', model_name: 'Model2', brand_id: 'b3', year: 2019 });
   await request(app).post('/models').send({ model_id: 'm3', model_name: 'Model3', brand_id: 'b4', year: 2020 });
   await request(app).post('/models').send({ model_id: 'm4', model_name: 'Model4', brand_id: 'b3', year: 2021 });
