@@ -61,3 +61,39 @@ test('POST /models and GET /models and GET /brands/:brand_id/models', async () =
   expect(brandModels.body.length).toBe(1);
   expect(brandModels.body[0].model_name).toBe('Model1');
 });
+
+test('POST /brands without required brand_id returns 400', async () => {
+  const badBrand = { brand_name: 'NoIdBrand' };
+  const res = await request(app).post('/brands').send(badBrand);
+  expect(res.status).toBe(400);
+  expect(res.body).toHaveProperty('error');
+});
+
+test('POST /models without required brand_id returns 400', async () => {
+  const badModel = { model_id: 'm_bad', model_name: 'NoBrandModel', year: 2021 };
+  const res = await request(app).post('/models').send(badModel);
+  expect(res.status).toBe(400);
+  expect(res.body).toHaveProperty('error');
+});
+
+test('Create multiple models across brands and verify listing and filtering', async () => {
+  // create two brands
+  await request(app).post('/brands').send({ brand_id: 'b3', brand_name: 'Brand3' });
+  await request(app).post('/brands').send({ brand_id: 'b4', brand_name: 'Brand4' });
+
+  // create three models across the two brands
+  await request(app).post('/models').send({ model_id: 'm2', model_name: 'Model2', brand_id: 'b3', year: 2019 });
+  await request(app).post('/models').send({ model_id: 'm3', model_name: 'Model3', brand_id: 'b4', year: 2020 });
+  await request(app).post('/models').send({ model_id: 'm4', model_name: 'Model4', brand_id: 'b3', year: 2021 });
+
+  const allModels = await request(app).get('/models');
+  expect(allModels.status).toBe(200);
+  expect(Array.isArray(allModels.body)).toBe(true);
+  expect(allModels.body.length).toBe(3);
+
+  const b3Models = await request(app).get('/brands/b3/models');
+  expect(b3Models.status).toBe(200);
+  expect(b3Models.body.length).toBe(2);
+  const names = b3Models.body.map(m => m.model_name).sort();
+  expect(names).toEqual(['Model2', 'Model4']);
+});
