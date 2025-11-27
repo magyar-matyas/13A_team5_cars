@@ -26,4 +26,30 @@ router.post("/", async (req, res) => {
     }
 });
 
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedModel = await CarModel.findByIdAndDelete(id);
+        if (!deletedModel) {
+            return res.status(404).json({ error: "Model not found" });
+        }
+        res.status(200).json({ message: "Model deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.put("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedModel = await CarModel.findByIdAndUpdate(id, req.body, { new: true });
+        if (!updatedModel) {
+            return res.status(404).json({ error: "Model not found" });
+        }
+        res.status(200).json(updatedModel);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
