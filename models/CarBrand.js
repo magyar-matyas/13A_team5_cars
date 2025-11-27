@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-const CarBrandSchema = new mongoose.Schema({
-  brand_id: { type: String, required: true, unique: true },
-  brand_name: String,
-  country_of_origin: String,
-  founded_year: Number,
-  website: String
-});
+const carBrandSchema = new mongoose.Schema({
+    _id: { type: String, required: true },
+    brand_name: { type: String, required: true },
+    country_of_origin: { type: String, required: true },
+    founded_year: { type: Number, required: true },
+    website: { type: String, required: true }
+}, { collection: 'Car_Brands' }); 
 
-module.exports = mongoose.model("CarBrand", CarBrandSchema, "Car_Brands");
+module.exports = mongoose.model("CarBrand", carBrandSchema);

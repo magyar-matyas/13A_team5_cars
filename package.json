@@ -13,16 +13,19 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "mongodb": "^7.0.0",
     "mongoose": "^8.19.3"
   },
   "devDependencies": {
     "jest": "^29.6.0",
-    "supertest": "^6.3.3",
-    "mongodb-memory-server": "^8.12.0"
+    "mongodb-memory-server": "^8.12.0",
+    "supertest": "^6.3.3"
   },
   "jest": {
     "testEnvironment": "node",
     "verbose": true,
-    "setupFiles": ["<rootDir>/tests/jest.setup.js"]
+    "setupFiles": [
+      "<rootDir>/tests/jest.setup.js"
+    ]
   }
 }

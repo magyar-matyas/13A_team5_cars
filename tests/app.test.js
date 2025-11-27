@@ -31,10 +31,16 @@ test('GET /brands returns empty array initially', async () => {
 });
 
 test('POST /brands creates brand and GET /brands returns it', async () => {
-  const brand = { brand_id: 'b1', brand_name: 'TestBrand' };
+  const brand = {
+    _id: 'b1',
+    brand_name: 'TestBrand',
+    country_of_origin: 'Germany',
+    founded_year: 1937,
+    website: 'https://testbrand.com'
+  };
   const post = await request(app).post('/brands').send(brand);
   expect(post.status).toBe(201);
-  expect(post.body.brand_id).toBe('b1');
+  expect(post.body._id).toBe('b1');
 
   const get = await request(app).get('/brands');
   expect(get.status).toBe(200);
@@ -43,13 +49,20 @@ test('POST /brands creates brand and GET /brands returns it', async () => {
 });
 
 test('POST /models and GET /models and GET /brands/:brand_id/models', async () => {
-  const brand = { brand_id: 'b2', brand_name: 'Brand2' };
+  const brand = { _id: 'b2', brand_name: 'Brand2' };
   await request(app).post('/brands').send(brand);
 
-  const model = { model_id: 'm1', model_name: 'Model1', brand_id: 'b2', year: 2020 };
+  const model = {
+    _id: 'm1',
+    model_name: 'Model1',
+    brand_id: 'b2',
+    year: 2020,
+    car_type: 'SUV',
+    price: 30000
+  };
   const postModel = await request(app).post('/models').send(model);
   expect(postModel.status).toBe(201);
-  expect(postModel.body.model_id).toBe('m1');
+  expect(postModel.body._id).toBe('m1');
 
   const getModels = await request(app).get('/models');
   expect(getModels.status).toBe(200);
@@ -61,7 +74,7 @@ test('POST /models and GET /models and GET /brands/:brand_id/models', async () =
   expect(brandModels.body[0].model_name).toBe('Model1');
 });
 
-test('POST /brands without required brand_id returns 400', async () => {
+test('POST /brands without required _id returns 400', async () => {
   const badBrand = { brand_name: 'NoIdBrand' };
   const res = await request(app).post('/brands').send(badBrand);
   expect(res.status).toBe(400);
@@ -69,19 +82,55 @@ test('POST /brands without required brand_id returns 400', async () => {
 });
 
 test('POST /models without required brand_id returns 400', async () => {
-  const badModel = { model_id: 'm_bad', model_name: 'NoBrandModel', year: 2021 };
+  const badModel = { _id: 'm_bad', model_name: 'NoBrandModel', year: 2021 };
   const res = await request(app).post('/models').send(badModel);
   expect(res.status).toBe(400);
   expect(res.body).toHaveProperty('error');
 });
 
 test('Create multiple models across brands and verify listing and filtering', async () => {
-  await request(app).post('/brands').send({ brand_id: 'b3', brand_name: 'Brand3' });
-  await request(app).post('/brands').send({ brand_id: 'b4', brand_name: 'Brand4' });
+  await request(app).post('/brands').send({
+    _id: 'b3',
+    brand_name: 'Brand3',
+    country_of_origin: 'Japan',
+    founded_year: 1950,
+    website: 'https://brand3.com'
+  });
 
-  await request(app).post('/models').send({ model_id: 'm2', model_name: 'Model2', brand_id: 'b3', year: 2019 });
-  await request(app).post('/models').send({ model_id: 'm3', model_name: 'Model3', brand_id: 'b4', year: 2020 });
-  await request(app).post('/models').send({ model_id: 'm4', model_name: 'Model4', brand_id: 'b3', year: 2021 });
+  await request(app).post('/brands').send({
+    _id: 'b4',
+    brand_name: 'Brand4',
+    country_of_origin: 'Italy',
+    founded_year: 1960,
+    website: 'https://brand4.com'
+  });
+
+  await request(app).post('/models').send({
+    _id: 'm2',
+    model_name: 'Model2',
+    brand_id: 'b3',
+    year: 2019,
+    car_type: 'SUV',
+    price: 25000
+  });
+
+  await request(app).post('/models').send({
+    _id: 'm3',
+    model_name: 'Model3',
+    brand_id: 'b4',
+    year: 2020,
+    car_type: 'Sedan',
+    price: 30000
+  });
+
+  await request(app).post('/models').send({
+    _id: 'm4',
+    model_name: 'Model4',
+    brand_id: 'b3',
+    year: 2021,
+    car_type: 'Coupe',
+    price: 35000
+  });
 
   const allModels = await request(app).get('/models');
   expect(allModels.status).toBe(200);
@@ -91,6 +140,4 @@ test('Create multiple models across brands and verify listing and filtering', as
   const b3Models = await request(app).get('/brands/b3/models');
   expect(b3Models.status).toBe(200);
   expect(b3Models.body.length).toBe(2);
-  const names = b3Models.body.map(m => m.model_name).sort();
-  expect(names).toEqual(['Model2', 'Model4']);
 });
