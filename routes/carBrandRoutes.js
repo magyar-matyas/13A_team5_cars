@@ -3,7 +3,7 @@ const router = express.Router();
 const CarBrand = require("../models/CarBrand");
 const CarModel = require("../models/CarModel");
 
-let brandCounter = 4; // Start from the next available ID (e.g., BR004)
+
 
 router.get("/", async (req, res) => {
     try {
@@ -16,8 +16,13 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const newId = `BR${String(brandCounter).padStart(3, "0")}`;
-        brandCounter++;
+        // Find the highest existing _id value in the collection
+        const lastBrand = await CarBrand.findOne().sort({ _id: -1 });
+        const lastId = lastBrand ? parseInt(lastBrand._id.replace("BR", "")) : 0;
+
+        // Generate the next ID based on the highest existing ID
+        const newId = `BR${String(lastId + 1).padStart(3, "0")}`;
+
         const brand = new CarBrand({ _id: newId, ...req.body });
         await brand.save();
         res.status(201).json(brand);

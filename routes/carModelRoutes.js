@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const CarModel = require("../models/CarModel");
 
-let modelCounter = 7; 
 
 router.get("/", async (req, res) => {
     try {
@@ -15,9 +14,9 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const newId = `M${String(modelCounter).padStart(3, "0")}`;
-        modelCounter++;
-        const model = new CarModel({ _id: newId, ...req.body }); // Use `_id`
+        const modelCount = await CarModel.countDocuments(); // Count existing models in the database
+        const newId = `M${String(modelCount + 1).padStart(3, "0")}`; // Generate ID based on count
+        const model = new CarModel({ _id: newId, ...req.body });
         console.log("Generated Model:", model); // Debugging
         await model.save();
         res.status(201).json(model);
