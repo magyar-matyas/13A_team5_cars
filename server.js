@@ -13,15 +13,18 @@ app.use(express.json());
 app.use("/brands", carBrandRoutes);
 app.use("/models", carModelRoutes);
 
-if (process.env.NODE_ENV !== 'test') {
-  mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected"))
-    .catch(err => console.log(err));
+console.log("MONGO_URI:", process.env.MONGO_URI);
 
-  const PORT = process.env.PORT || 3000;
-  const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  module.exports = server;
+if (process.env.NODE_ENV !== 'test') {
+    mongoose
+        .connect(process.env.MONGO_URI)
+        .then(() => console.log("MongoDB connected"))
+        .catch(err => console.error("MongoDB connection error:", err));
+
+    const PORT = process.env.PORT || 3000;
+    const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    module.exports = server;
 } else {
-  module.exports = app;
+    console.log("Running in test mode");
+    module.exports = app;
 }

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const request = require("supertest");
+const app = require("../server");
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const CarBrand = require('../models/CarBrand');
 
@@ -15,26 +17,48 @@ afterAll(async () => {
   await mongoServer.stop();
 });
 
-afterEach(async () => {
-  await CarBrand.deleteMany({});
-});
+if (process.env.NODE_ENV === 'test') {
+  afterEach(async () => {
+    await CarBrand.deleteMany({});
+  });
+}
 
 describe('CarBrand model', () => {
   test('saves a brand with required fields', async () => {
-    const brand = new CarBrand({ brand_id: 'b_unit_1', brand_name: 'UnitBrand' });
+    const brand = new CarBrand({
+      _id: 'b_unit_1',
+      brand_name: 'UnitBrand',
+      country_of_origin: 'USA',
+      founded_year: 1903,
+      website: 'https://unitbrand.com'
+    });
     const saved = await brand.save();
-    expect(saved.brand_id).toBe('b_unit_1');
+    expect(saved._id).toBe('b_unit_1');
     expect(saved.brand_name).toBe('UnitBrand');
   });
 
-  test('fails saving brand without required brand_id', async () => {
+  test('fails saving brand without required _id', async () => {
     const brand = new CarBrand({ brand_name: 'NoId' });
     await expect(brand.save()).rejects.toThrow();
   });
 
-  test('enforces unique brand_id', async () => {
-    await new CarBrand({ brand_id: 'dup', brand_name: 'A' }).save();
-    const dup = new CarBrand({ brand_id: 'dup', brand_name: 'B' });
+  test('enforces unique _id', async () => {
+    await new CarBrand({
+      _id: 'dup',
+      brand_name: 'A',
+      country_of_origin: 'USA',
+      founded_year: 1903,
+      website: 'https://brandA.com'
+    }).save();
+
+    const dup = new CarBrand({
+      _id: 'dup',
+      brand_name: 'B',
+      country_of_origin: 'Germany',
+      founded_year: 1920,
+      website: 'https://brandB.com'
+    });
+
     await expect(dup.save()).rejects.toThrow();
   });
 });

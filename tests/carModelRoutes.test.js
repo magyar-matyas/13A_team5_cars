@@ -34,10 +34,17 @@ describe('CarModel routes', () => {
   test('POST /models creates a model and GET /models returns it', async () => {
     await request(app).post('/brands').send({ brand_id: 'rb1', brand_name: 'RouteBrand' });
 
-    const model = { model_id: 'rm1', model_name: 'RouteModel', brand_id: 'rb1', year: 2023 };
+    const model = {
+      _id: 'rm1',
+      model_name: 'RouteModel',
+      brand_id: 'rb1',
+      year: 2023,
+      car_type: 'Sedan',
+      price: 25000
+    };
     const post = await request(app).post('/models').send(model);
     expect(post.status).toBe(201);
-    expect(post.body.model_id).toBe('rm1');
+    expect(post.body._id).toBe('rm1');
 
     const get = await request(app).get('/models');
     expect(get.status).toBe(200);
