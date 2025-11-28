@@ -4,7 +4,12 @@ const serverModule = require('../server');
 const CarBrand = require('../models/CarBrand');
 const CarModel = require('../models/CarModel');
 
-afterEach(() => jest.restoreAllMocks());
+const _origCarModelFind = CarModel.find;
+
+afterEach(() => {
+  jest.restoreAllMocks();
+  CarModel.find = _origCarModelFind;
+});
 
 test('server.js az Express alkalmazást exportálja teszt környezetben', async () => {
   expect(typeof serverModule).toBe('function');
@@ -12,7 +17,7 @@ test('server.js az Express alkalmazást exportálja teszt környezetben', async 
 });
 
 test('exportált szerver válaszol az útvonalakra (GET /models üres)', async () => {
-  jest.spyOn(CarModel, 'find').mockResolvedValue([]);
+  CarModel.find = jest.fn().mockResolvedValue([]);
   const res = await request(serverModule).get('/models');
   expect(res.status).toBe(200);
   expect(Array.isArray(res.body)).toBe(true);

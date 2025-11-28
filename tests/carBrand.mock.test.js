@@ -2,14 +2,25 @@ const request = require('supertest');
 const app = require('../app');
 const CarBrand = require('../models/CarBrand');
 
+const _origCarBrandFind = CarBrand.find;
+const _origCarBrandFindOne = CarBrand.findOne;
+const _origCarBrandProtoSave = CarBrand.prototype.save;
+const _origCarBrandFindByIdAndUpdate = CarBrand.findByIdAndUpdate;
+const _origCarBrandFindByIdAndDelete = CarBrand.findByIdAndDelete;
+
 describe('CarBrand útvonalak (mockolt)', () => {
   afterEach(() => {
     jest.restoreAllMocks();
+    CarBrand.find = _origCarBrandFind;
+    CarBrand.findOne = _origCarBrandFindOne;
+    CarBrand.prototype.save = _origCarBrandProtoSave;
+    CarBrand.findByIdAndUpdate = _origCarBrandFindByIdAndUpdate;
+    CarBrand.findByIdAndDelete = _origCarBrandFindByIdAndDelete;
   });
 
   test('GET /brands visszaad egy tömböt', async () => {
     const brands = [{ _id: 'b1', brand_name: 'A', country_of_origin: 'X', founded_year: 1, website: 'w' }];
-    jest.spyOn(CarBrand, 'find').mockResolvedValue(brands);
+    CarBrand.find = jest.fn().mockResolvedValue(brands);
 
     const res = await request(app).get('/brands');
     expect(res.status).toBe(200);
@@ -17,7 +28,7 @@ describe('CarBrand útvonalak (mockolt)', () => {
   });
 
   test('GET /brands kezeli az adatbázis hibát', async () => {
-    jest.spyOn(CarBrand, 'find').mockRejectedValue(new Error('DB fail'));
+    CarBrand.find = jest.fn().mockRejectedValue(new Error('DB fail'));
 
     const res = await request(app).get('/brands');
     expect(res.status).toBe(500);
@@ -25,9 +36,9 @@ describe('CarBrand útvonalak (mockolt)', () => {
   });
 
   test('POST /brands létrehoz egy márkát (generált azonosító)', async () => {
-    jest.spyOn(CarBrand, 'findOne').mockImplementation(() => ({ sort: () => Promise.resolve(null) }));
+    CarBrand.findOne = jest.fn().mockImplementation(() => ({ sort: () => Promise.resolve(null) }));
     const saved = { _id: 'BR001', brand_name: 'New', country_of_origin: 'Y', founded_year: 2000, website: 'w' };
-    jest.spyOn(CarBrand.prototype, 'save').mockResolvedValue(saved);
+    CarBrand.prototype.save = jest.fn().mockResolvedValue(saved);
 
     const res = await request(app).post('/brands').send({ brand_name: 'New', country_of_origin: 'Y', founded_year: 2000, website: 'w' });
     expect(res.status).toBe(201);
@@ -35,7 +46,7 @@ describe('CarBrand útvonalak (mockolt)', () => {
   });
 
   test('PUT /brands/:id 404-at ad vissza, ha a márka nem található', async () => {
-    jest.spyOn(CarBrand, 'findByIdAndUpdate').mockResolvedValue(null);
+    CarBrand.findByIdAndUpdate = jest.fn().mockResolvedValue(null);
 
     const res = await request(app).put('/brands/nonexistent').send({ brand_name: 'X' });
     expect(res.status).toBe(404);
@@ -43,7 +54,7 @@ describe('CarBrand útvonalak (mockolt)', () => {
   });
 
   test('DELETE /brands/:id siker, ha megtalálható', async () => {
-    jest.spyOn(CarBrand, 'findByIdAndDelete').mockResolvedValue({ _id: 'bdel' });
+    CarBrand.findByIdAndDelete = jest.fn().mockResolvedValue({ _id: 'bdel' });
 
     const res = await request(app).delete('/brands/bdel');
     expect(res.status).toBe(200);
