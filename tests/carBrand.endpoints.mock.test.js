@@ -26,6 +26,7 @@ describe('CarBrand végpontok — végpontonként mockolt tesztek', () => {
 
     const res = await request(app).get('/brands');
     expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/application\/json/);
     expect(res.body).toEqual(brands);
   });
 
@@ -93,6 +94,7 @@ describe('CarBrand végpontok — végpontonként mockolt tesztek', () => {
     CarModel.find = jest.fn().mockImplementation((query) => Promise.resolve(models));
     const res = await request(app).get('/brands/BRX/models');
     expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/application\/json/);
     expect(res.body).toEqual(models);
   });
 

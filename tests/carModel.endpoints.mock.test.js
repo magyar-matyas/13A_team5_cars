@@ -22,6 +22,7 @@ describe('CarModel végpontok — végpontonként mockolt tesztek', () => {
     CarModel.find = jest.fn().mockResolvedValue(models);
     const res = await request(app).get('/models');
     expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/application\/json/);
     expect(res.body).toEqual(models);
   });
 
@@ -29,6 +30,7 @@ describe('CarModel végpontok — végpontonként mockolt tesztek', () => {
     CarModel.find = jest.fn().mockResolvedValue([]);
     const res = await request(app).get('/models');
     expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/application\/json/);
     expect(res.body.length).toBe(0);
   });
 
@@ -44,6 +46,7 @@ describe('CarModel végpontok — végpontonként mockolt tesztek', () => {
     CarModel.find = jest.fn().mockResolvedValue(models);
     const res = await request(app).get('/models');
     expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/application\/json/);
     expect(res.body[0]).toMatchObject({ _id: 'M002', model_name: 'B' });
   });
 

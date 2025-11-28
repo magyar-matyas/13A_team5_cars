@@ -20,6 +20,7 @@ test('exportált szerver válaszol az útvonalakra (GET /models üres)', async (
   CarModel.find = jest.fn().mockResolvedValue([]);
   const res = await request(serverModule).get('/models');
   expect(res.status).toBe(200);
+  expect(res.headers['content-type']).toMatch(/application\/json/);
   expect(Array.isArray(res.body)).toBe(true);
   expect(res.body.length).toBe(0);
 });
