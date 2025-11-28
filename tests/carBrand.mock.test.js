@@ -25,7 +25,6 @@ describe('CarBrand útvonalak (mockolt)', () => {
   });
 
   test('POST /brands létrehoz egy márkát (generált azonosító)', async () => {
-    // simulate no existing brands so chained findOne().sort(...) resolves to null
     jest.spyOn(CarBrand, 'findOne').mockImplementation(() => ({ sort: () => Promise.resolve(null) }));
     const saved = { _id: 'BR001', brand_name: 'New', country_of_origin: 'Y', founded_year: 2000, website: 'w' };
     jest.spyOn(CarBrand.prototype, 'save').mockResolvedValue(saved);

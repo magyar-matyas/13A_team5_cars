@@ -5,7 +5,6 @@ const CarModel = require('../models/CarModel');
 describe('CarModel végpontok — végpontonként mockolt tesztek', () => {
   afterEach(() => jest.restoreAllMocks());
 
-  // GET /models
   test('GET /models - visszaadja a listát', async () => {
     const models = [{ _id: 'M001', model_name: 'A' }];
     jest.spyOn(CarModel, 'find').mockResolvedValue(models);
@@ -36,7 +35,6 @@ describe('CarModel végpontok — végpontonként mockolt tesztek', () => {
     expect(res.body[0]).toMatchObject({ _id: 'M002', model_name: 'B' });
   });
 
-  // POST /models
   test('POST /models - létrehoz M001 azonosítóval, ha a számláló 0', async () => {
     jest.spyOn(CarModel, 'countDocuments').mockResolvedValue(0);
     const saved = { _id: 'M001', model_name: 'New', brand_id: 'BR1', year: 2022, car_type: 'Hatch', price: 20000 };
@@ -71,7 +69,6 @@ describe('CarModel végpontok — végpontonként mockolt tesztek', () => {
     expect(res.body).toHaveProperty('error');
   });
 
-  // PUT /models/:id
   test('PUT /models/:id - siker, visszaadja a frissített modellt', async () => {
     const updated = { _id: 'MUP', model_name: 'Updated' };
     jest.spyOn(CarModel, 'findByIdAndUpdate').mockResolvedValue(updated);
@@ -102,7 +99,6 @@ describe('CarModel végpontok — végpontonként mockolt tesztek', () => {
     expect(res.body.model_name).toBe('Partial');
   });
 
-  // DELETE /models/:id
   test('DELETE /models/:id - siker, üzenetet ad vissza', async () => {
     jest.spyOn(CarModel, 'findByIdAndDelete').mockResolvedValue({ _id: 'MD' });
     const res = await request(app).delete('/models/MD');

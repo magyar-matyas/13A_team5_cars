@@ -6,7 +6,6 @@ const CarModel = require('../models/CarModel');
 describe('CarBrand végpontok — végpontonként mockolt tesztek', () => {
   afterEach(() => jest.restoreAllMocks());
 
-  // GET /brands
   test('GET /brands - visszaadja a márkák listáját', async () => {
     const brands = [{ _id: 'BR001', brand_name: 'A' }];
     jest.spyOn(CarBrand, 'find').mockResolvedValue(brands);
@@ -39,7 +38,6 @@ describe('CarBrand végpontok — végpontonként mockolt tesztek', () => {
     expect(res.body[0]).toMatchObject({ _id: 'BR002', brand_name: 'B' });
   });
 
-  // POST /brands
   test('POST /brands - létrehoz márkát, ha nincs korábbi', async () => {
     jest.spyOn(CarBrand, 'findOne').mockImplementation(() => ({ sort: () => Promise.resolve(null) }));
     const saved = { _id: 'BR001', brand_name: 'New', country_of_origin: 'Y', founded_year: 2000, website: 'w' };
@@ -76,7 +74,6 @@ describe('CarBrand végpontok — végpontonként mockolt tesztek', () => {
     expect(res.body).toHaveProperty('error');
   });
 
-  // GET /brands/:brand_id/models
   test('GET /brands/:brand_id/models - visszaadja a márkához tartozó modelleket', async () => {
     const models = [{ _id: 'm1', brand_id: 'BRX' }];
     jest.spyOn(CarModel, 'find').mockImplementation((query) => Promise.resolve(models));
@@ -107,7 +104,6 @@ describe('CarBrand végpontok — végpontonként mockolt tesztek', () => {
     expect(res.body.every(m => m.brand_id === 'b1')).toBe(true);
   });
 
-  // PUT /brands/:id
   test('PUT /brands/:id - siker, visszaadja a frissített objektumot', async () => {
     const updated = { _id: 'BRX', brand_name: 'Updated' };
     jest.spyOn(CarBrand, 'findByIdAndUpdate').mockResolvedValue(updated);
@@ -138,7 +134,6 @@ describe('CarBrand végpontok — végpontonként mockolt tesztek', () => {
     expect(res.body.brand_name).toBe('Part');
   });
 
-  // DELETE /brands/:id
   test('DELETE /brands/:id - siker, üzenetet ad vissza', async () => {
     jest.spyOn(CarBrand, 'findByIdAndDelete').mockResolvedValue({ _id: 'BRD' });
     const res = await request(app).delete('/brands/BRD');

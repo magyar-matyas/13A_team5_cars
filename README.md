@@ -24,7 +24,6 @@ PORT=3000
 - Fejlesztés (a `server.js` kapcsolódik a `MONGO_URI`-hez, kivéve ha `NODE_ENV=test`):
 
 ```powershell
-# PowerShell vagy cmd használható; győződj meg, hogy a MONGO_URI be van állítva
 node server.js
 ```
 
@@ -80,6 +79,3 @@ npx jest tests/carModel.endpoints.mock.test.js
 Ha szeretnéd, megtehetem:
 - Eltávolítom vagy feltételesen megjelenítem a debug logokat a `routes/carModelRoutes.js`-ben, hogy csökkentsem a tesztek kimeneti zaját, és újrafuttatom a teszteket.
 - Hozzáadok `Makefile`-t/`npm` script parancsokat a gyakori feladatokhoz.
-
----
-_A fájlt a repository karbantartó eszköze segédletével generáltam. Kérdések esetén nyiss issue-t vagy jelezd a csapatnak._
