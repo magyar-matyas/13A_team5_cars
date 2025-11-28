@@ -14,14 +14,14 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const modelCount = await CarModel.countDocuments(); // Count existing models in the database
-        const newId = `M${String(modelCount + 1).padStart(3, "0")}`; // Generate ID based on count
+        const modelCount = await CarModel.countDocuments(); 
+        const newId = `M${String(modelCount + 1).padStart(3, "0")}`; 
         const model = new CarModel({ _id: newId, ...req.body });
-        console.log("Generated Model:", model); // Debugging
+        console.log("Generated Model:", model); 
         await model.save();
         res.status(201).json(model);
     } catch (err) {
-        console.error("Error:", err.message); // Debugging
+        console.error("Error:", err.message); 
         res.status(400).json({ error: err.message });
     }
 });

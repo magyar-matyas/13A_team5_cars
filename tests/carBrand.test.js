@@ -23,8 +23,8 @@ if (process.env.NODE_ENV === 'test') {
   });
 }
 
-describe('CarBrand model', () => {
-  test('saves a brand with required fields', async () => {
+describe('CarBrand modell', () => {
+  test('elmenti a márkát a kötelező mezőkkel', async () => {
     const brand = new CarBrand({
       _id: 'b_unit_1',
       brand_name: 'UnitBrand',
@@ -37,12 +37,12 @@ describe('CarBrand model', () => {
     expect(saved.brand_name).toBe('UnitBrand');
   });
 
-  test('fails saving brand without required _id', async () => {
+  test('sikertelen mentés _id nélkül', async () => {
     const brand = new CarBrand({ brand_name: 'NoId' });
     await expect(brand.save()).rejects.toThrow();
   });
 
-  test('enforces unique _id', async () => {
+  test('megköveteli az egyedi _id-t', async () => {
     await new CarBrand({
       _id: 'dup',
       brand_name: 'A',
